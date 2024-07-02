@@ -1,7 +1,9 @@
 package com.example.musicbackground
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -9,8 +11,10 @@ import androidx.core.view.WindowInsetsCompat
 
 class MainActivity : AppCompatActivity() {
 
-    val button: ImageView = findViewById(R.id.tombol)
-    val audiolink: String = "https://soundcloud.com/valdynaaditiya/ebit-g-ade-berita-kepada-kawan"
+
+    val audiolink: String = "https://drive.usercontent.google.com/download?id=1SKBTKnChjGWL73wPqjEwkMKUu0eSpIWi&export=download&authuser=0"
+    var musicPlaying : Boolean = false
+    lateinit var serviceIntent : Intent
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -21,9 +25,43 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
+        val button: ImageView = findViewById(R.id.tombol)
+        button.setImageResource(R.drawable.play)
+        serviceIntent = Intent(this, MyPlayService::class.java)
+
         button.setOnClickListener(){
+            if (!musicPlaying) {
+                playAudio()
+                button.setImageResource(R.drawable.stop)
+                musicPlaying=true
+            }
+            else{
+                stopPlayService()
+                button.setImageResource(R.drawable.play)
+                musicPlaying=false
+            }
 
 
+        }
+    }
+
+    private fun stopPlayService() {
+        try {
+            stopService(serviceIntent)
+        }
+        catch (e : SecurityException){
+            Toast.makeText(this,"Error : " + e.message, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun playAudio() {
+        serviceIntent.putExtra("audiolink", audiolink);
+
+        try {
+            startService(serviceIntent)
+        }
+        catch (e : SecurityException) {
+            Toast.makeText(this, "Erroor : " + e.message,Toast.LENGTH_SHORT).show()
         }
     }
 }

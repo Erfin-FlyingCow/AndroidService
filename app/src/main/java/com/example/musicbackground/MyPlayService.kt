@@ -6,20 +6,21 @@ import android.media.MediaPlayer
 import android.os.IBinder
 import android.widget.Toast
 
-class MyPlayService: Service(),MediaPlayer.OnCompletionListener,
-    MediaPlayer.OnSeekCompleteListener,MediaPlayer.OnPreparedListener,MediaPlayer.OnErrorListener,
-    MediaPlayer.OnBufferingUpdateListener, MediaPlayer.OnInfoListener{
+class MyPlayService : Service(), MediaPlayer.OnCompletionListener,
+    MediaPlayer.OnSeekCompleteListener, MediaPlayer.OnPreparedListener,
+    MediaPlayer.OnErrorListener, MediaPlayer.OnBufferingUpdateListener,
+    MediaPlayer.OnInfoListener {
 
-    private lateinit var mediaPlayer : MediaPlayer
-    private lateinit var link : String
+    private lateinit var mediaPlayer: MediaPlayer
+    private lateinit var link: String
 
     override fun onBind(intent: Intent?): IBinder? {
-        TODO("Not yet implemented")
+        return null
     }
 
     override fun onCreate() {
         super.onCreate()
-
+        mediaPlayer = MediaPlayer()
         mediaPlayer.setOnCompletionListener(this)
         mediaPlayer.setOnPreparedListener(this)
         mediaPlayer.setOnErrorListener(this)
@@ -29,68 +30,64 @@ class MyPlayService: Service(),MediaPlayer.OnCompletionListener,
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (intent != null && intent.hasExtra("audiolink")) {
+            link = intent.getStringExtra("audiolink").toString()
+            mediaPlayer.reset()
 
-
-        link = intent?.getStringExtra("audiolink").toString()
-        mediaPlayer.reset()
-
-        if (mediaPlayer.isPlaying){
             try {
                 mediaPlayer.setDataSource(link)
                 mediaPlayer.prepareAsync()
+            } catch (e: Exception) {
+                Toast.makeText(this, "Error: " + e.message, Toast.LENGTH_SHORT).show()
             }
-            catch (e : Exception){
-                Toast.makeText(this, "Error " + e.message, Toast.LENGTH_SHORT).show()
-            }
-            return START_STICKY
         }
 
-
-        return super.onStartCommand(intent, flags, startId)
+        return START_STICKY
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        if (mediaPlayer.isPlaying) {
+            mediaPlayer.stop()
+        }
+        mediaPlayer.release()
+    }
+
+    override fun onCompletion(mp: MediaPlayer?) {
+        if (mp?.isPlaying!!) {
+            mp.stop()
+        }
+        stopSelf()
     }
 
     override fun onSeekComplete(mp: MediaPlayer?) {
-        TODO("Not yet implemented")
+        // Implement as needed
     }
 
     override fun onPrepared(mp: MediaPlayer?) {
-        TODO("Not yet implemented")
+        mp?.start()
     }
 
     override fun onError(mp: MediaPlayer?, what: Int, extra: Int): Boolean {
-
-        when(what){
+        when (what) {
             MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK ->
-                Toast.makeText(this, "MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK",
-                    Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK", Toast.LENGTH_SHORT).show()
 
-            MediaPlayer.MEDIA_ERROR_SERVER_DIED -> Toast.makeText(this,"MEDIA_ERROR_SERVER_DIED",
-                Toast.LENGTH_SHORT).show()
+            MediaPlayer.MEDIA_ERROR_SERVER_DIED ->
+                Toast.makeText(this, "MEDIA_ERROR_SERVER_DIED", Toast.LENGTH_SHORT).show()
 
-
-            MediaPlayer.MEDIA_ERROR_UNKNOWN -> Toast.makeText(this, "MEDIA_ERROR_UNKNOWN",
-                Toast.LENGTH_SHORT).show()
+            MediaPlayer.MEDIA_ERROR_UNKNOWN ->
+                Toast.makeText(this, "MEDIA_ERROR_UNKNOWN", Toast.LENGTH_SHORT).show()
         }
         return false
     }
 
     override fun onBufferingUpdate(mp: MediaPlayer?, percent: Int) {
-        TODO("Not yet implemented")
+        // Implement as needed
     }
 
     override fun onInfo(mp: MediaPlayer?, what: Int, extra: Int): Boolean {
-        TODO("Not yet implemented")
-    }
-
-    override fun onCompletion(mp: MediaPlayer?) {
-
-        if (mp?.isPlaying!!){
-            mp.stop()
-        }
-        stopSelf()
+        // Implement as needed
+        return false
     }
 }
