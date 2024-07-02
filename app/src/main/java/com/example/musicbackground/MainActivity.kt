@@ -12,7 +12,7 @@ import androidx.core.view.WindowInsetsCompat
 class MainActivity : AppCompatActivity() {
 
 
-    val audiolink: String = "https://drive.usercontent.google.com/download?id=1SKBTKnChjGWL73wPqjEwkMKUu0eSpIWi&export=download&authuser=0"
+    val audiolink: String = "https://drive.usercontent.google.com/download?id=1rsoJHQ0CWZgtc5rZw0XurkZI37Mz5VmE&export=download&authuser=1&confirm=t&uuid=ad0415aa-8b5e-44ee-a680-4fc4fbde884a&at=APZUnTV-iu2jJ3CEO4oE1gCWeb6x:1719922638406"
     var musicPlaying : Boolean = false
     lateinit var serviceIntent : Intent
     override fun onCreate(savedInstanceState: Bundle?) {
