@@ -54,10 +54,15 @@ class MyPlayService : Service(), MediaPlayer.OnCompletionListener,
     }
 
     override fun onCompletion(mp: MediaPlayer?) {
+        val broadcastIntent = Intent("button.update")
+        broadcastIntent.putExtra("update","changePlay")
+        sendBroadcast(broadcastIntent)
         if (mp?.isPlaying!!) {
             mp.stop()
+
         }
         stopSelf()
+
     }
 
     override fun onSeekComplete(mp: MediaPlayer?) {
