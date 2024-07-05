@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity() {
 
 
     private val audiolink: String = "https://tunes.stocktune.com/public/a/b/5/ab5b1b62-acf0-4fa4-87ec-3551879338ce/galactic-banjo-cosmos-stocktune.mp3"
-    private var musicPlaying : Boolean = true
+    private var musicPlaying : Boolean = false
     private lateinit var serviceIntent : Intent
     lateinit var button: ImageView
 
@@ -28,6 +28,7 @@ class MainActivity : AppCompatActivity() {
             val action = intent!!.getStringExtra("update")
             if (action=="changePlay"){
                 button.setImageResource(R.drawable.play)
+                musicPlaying = false
             }
         }
     }
@@ -40,6 +41,8 @@ class MainActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(buttonReceiver, IntentFilter("button.update"), RECEIVER_EXPORTED)
         }
+
+        musicPlaying = true
 
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -55,7 +58,7 @@ class MainActivity : AppCompatActivity() {
 
         button.setOnClickListener {
             musicPlaying = if (!musicPlaying) {
-
+                playAudio()
                 button.setImageResource(R.drawable.stop)
                 true
             } else{
